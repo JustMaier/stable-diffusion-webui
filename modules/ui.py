@@ -94,7 +94,7 @@ def save_files(js_data, images, index):
     filenames = []
 
     data = json.loads(js_data)
-    
+
     if index > -1 and opts.save_selected_only and (index > 0 or not opts.return_grid): # ensures we are looking at a specific non-grid picture, and we have save_selected_only
         images = [images[index]]
         data["seed"] += (index - 1 if opts.return_grid else index)
@@ -387,7 +387,7 @@ def create_ui(txt2img, img2img, run_extras, run_pnginfo):
 
         with gr.Row().style(equal_height=False):
             with gr.Column(variant='panel'):
-                steps = gr.Slider(minimum=1, maximum=150, step=1, label="Sampling Steps", value=20)
+                steps = gr.Slider(minimum=1, maximum=150, step=1, label="Sampling Steps", value=30)
                 sampler_index = gr.Radio(label='Sampling method', elem_id="txt2img_sampling", choices=[x.name for x in samplers], value=samplers[0].name, type="index")
 
                 with gr.Row():
@@ -400,8 +400,10 @@ def create_ui(txt2img, img2img, run_extras, run_pnginfo):
                     denoising_strength = gr.Slider(minimum=0.0, maximum=1.0, step=0.01, label='Denoising strength', value=0.7)
 
                 with gr.Row():
-                    batch_count = gr.Slider(minimum=1, maximum=cmd_opts.max_batch_count, step=1, label='Batch count', value=1)
-                    batch_size = gr.Slider(minimum=1, maximum=8, step=1, label='Batch size', value=1)
+                    # batch_count = gr.Slider(minimum=1, maximum=cmd_opts.max_batch_count, step=1, label='Batch count', value=1)
+                    # batch_size = gr.Slider(minimum=1, maximum=8, step=1, label='Batch size', value=1)
+                    batch_count = gr.Radio(label='Batch count', choices=["1","2","4","8","12","16","32","64","128"], value="1")
+                    batch_size = gr.Radio(label='Batch size', choices=["1","2","4"], value="1")
 
                 cfg_scale = gr.Slider(minimum=1.0, maximum=30.0, step=0.5, label='CFG Scale', value=7.0)
 
@@ -525,7 +527,7 @@ def create_ui(txt2img, img2img, run_extras, run_pnginfo):
                         resize_mode = gr.Radio(label="Resize mode", elem_id="resize_mode", show_label=False, choices=["Just resize", "Crop and resize", "Resize and fill"], type="index", value="Just resize")
                         mask_mode = gr.Radio(label="Mask mode", show_label=False, choices=["Draw mask", "Upload mask"], type="index", value="Draw mask")
 
-                steps = gr.Slider(minimum=1, maximum=150, step=1, label="Sampling Steps", value=20)
+                steps = gr.Slider(minimum=1, maximum=150, step=1, label="Sampling Steps", value=30)
                 sampler_index = gr.Radio(label='Sampling method', choices=[x.name for x in samplers_for_img2img], value=samplers_for_img2img[0].name, type="index")
                 mask_blur = gr.Slider(label='Mask blur', minimum=0, maximum=64, step=1, value=4, visible=False)
                 inpainting_fill = gr.Radio(label='Masked content', choices=['fill', 'original', 'latent noise', 'latent nothing'], value='fill', type="index", visible=False)
@@ -543,8 +545,10 @@ def create_ui(txt2img, img2img, run_extras, run_pnginfo):
                     sd_upscale_upscaler_name = gr.Radio(label='Upscaler', choices=[x.name for x in shared.sd_upscalers], value=shared.sd_upscalers[0].name, type="index", visible=False)
 
                 with gr.Row():
-                    batch_count = gr.Slider(minimum=1, maximum=cmd_opts.max_batch_count, step=1, label='Batch count', value=1)
-                    batch_size = gr.Slider(minimum=1, maximum=8, step=1, label='Batch size', value=1)
+                    # batch_count = gr.Slider(minimum=1, maximum=cmd_opts.max_batch_count, step=1, label='Batch count', value=1)
+                    # batch_size = gr.Slider(minimum=1, maximum=8, step=1, label='Batch size', value=1)
+                    batch_count = gr.Radio(label='Batch count', choices=["1","2","4","8","12","16","32","64","128"], value="1")
+                    batch_size = gr.Radio(label='Batch size', choices=["1","2","4"], value="1")
 
                 with gr.Group():
                     cfg_scale = gr.Slider(minimum=1.0, maximum=30.0, step=0.5, label='CFG Scale', value=7.0)

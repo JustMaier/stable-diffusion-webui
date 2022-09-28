@@ -6,6 +6,7 @@ __pycache__
 /model.ckpt
 /models/*.ckpt
 /GFPGANv1.*.pth
+/gfpgan/weights/*.pth
 /ui-config.json
 /outputs
 /config.json
@@ -19,3 +20,6 @@ __pycache__
 /webui-user.sh
 /interrogate
 /user.css
+/.idea
+notification.mp3
+/SwinIR

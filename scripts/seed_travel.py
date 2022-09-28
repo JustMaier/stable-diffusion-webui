@@ -16,10 +16,17 @@ class Script(scripts.Script):
     def ui(self, is_img2img):
         unsinify = gr.Checkbox(label='Reduce effect of sin() during interpolation', value=True)
         dest_seed = gr.Textbox(label="Destination seed(s) (Comma separated)", lines=1)
-        steps = gr.Number(label="Steps", value=10)
+        steps = gr.Number(label="Travel Steps", value=30)
         save_video = gr.Checkbox(label='Save results as video', value=True)
+        fps = gr.Number(label="Video FPS", value=30)
 
-        return [dest_seed, steps, unsinify, save_video]
+        # Hide video options if not saving video
+        video_options = [fps]
+        def change_visibility(show):
+            return {comp:{"visible": show, "__type__": "update"} for comp in video_options}
+        save_video.change(change_visibility, show_progress=False, inputs=[save_video], outputs=video_options)
+
+        return [dest_seed, steps, fps, unsinify, save_video]
 
     def get_next_sequence_number(path):
         from pathlib import Path
@@ -39,7 +46,7 @@ class Script(scripts.Script):
                 pass
         return result + 1
 
-    def run(self, p, dest_seed, steps, unsinify, save_video):
+    def run(self, p, dest_seed, steps, fps, unsinify, save_video):
         initial_info = None
         images = []
 
@@ -53,7 +60,12 @@ class Script(scripts.Script):
         seeds = [p.seed] + [int(x.strip()) for x in dest_seed.split(",")]
         total_images = int(steps) * len(seeds)
         print(f"Generating {total_images} images.")
-        state.job_count = total_images # Set the job count to the total number of images to be generated
+
+        # Set generation helpers
+        state.job_count = total_images
+        p.extra_generation_params["Travel steps"] = steps
+        p.extra_generation_params["Destination seeds"] = str(seeds)
+
         for i, next_seed in enumerate(seeds):
             p.seed = next_seed
             p.subseed = seeds[i+1] if i+1 < len(seeds) else seeds[0]
@@ -65,7 +77,6 @@ class Script(scripts.Script):
                 else:
                     p.subseed_strength = float(i/float(steps))
                 proc = process_images(p)
-
                 if initial_info is None:
                     initial_info = proc.info
                 images += proc.images
@@ -73,7 +84,7 @@ class Script(scripts.Script):
         if save_video:
             import moviepy.video.io.ImageSequenceClip as ImageSequenceClip
             import numpy as np
-            clip = ImageSequenceClip.ImageSequenceClip([np.asarray(i) for i in images], fps=30)
+            clip = ImageSequenceClip.ImageSequenceClip([np.asarray(i) for i in images], fps=fps)
             clip.write_videofile(os.path.join(travel_path, f"travel-{travel_number:05}.mp4"), verbose=False, logger=None)
 
         processed = Processed(p, images, p.seed, initial_info)

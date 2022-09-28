@@ -40,6 +40,7 @@ parser.add_argument("--opt-split-attention", action='store_true', help="force-en
 parser.add_argument("--disable-opt-split-attention", action='store_true', help="force-disables cross-attention layer optimization")
 parser.add_argument("--opt-split-attention-v1", action='store_true', help="enable older version of split attention optimization that does not consume all the VRAM it can find")
 parser.add_argument("--listen", action='store_true', help="launch gradio with 0.0.0.0 as server name, allowing to respond to network requests")
+parser.add_argument("--websocket", action='store_true', help="use websocket=True to launch the websocket server instead of the webui")
 parser.add_argument("--port", type=int, help="launch gradio with given server port, you need root/admin rights for ports < 1024, defaults to 7860 if available", default=None)
 parser.add_argument("--show-negative-prompt", action='store_true', help="does not do anything", default=False)
 parser.add_argument("--ui-config-file", type=str, help="filename to use for ui configuration", default=os.path.join(script_path, 'ui-config.json'))
@@ -80,7 +81,7 @@ class State:
         self.job_no += 1
         self.sampling_step = 0
         self.current_image_sampling_step = 0
-        
+
     def get_job_timestamp(self):
         return datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
@@ -192,7 +193,7 @@ options_templates.update(options_section(('system', "System"), {
 options_templates.update(options_section(('sd', "Stable Diffusion"), {
     "sd_model_checkpoint": OptionInfo(None, "Stable Diffusion checkpoint", gr.Radio, lambda: {"choices": [x.title for x in modules.sd_models.checkpoints_list.values()]}),
     "img2img_color_correction": OptionInfo(False, "Apply color correction to img2img results to match original colors."),
-    "save_images_before_color_correction": OptionInfo(False, "Save a copy of image before applying color correction to img2img results"),    
+    "save_images_before_color_correction": OptionInfo(False, "Save a copy of image before applying color correction to img2img results"),
     "img2img_fix_steps": OptionInfo(False, "With img2img, do exactly the amount of steps the slider specifies (normally you'd do less with less denoising)."),
     "enable_quantization": OptionInfo(False, "Enable quantization in K samplers for sharper and cleaner results. This may change existing seeds. Requires restart to apply."),
     "enable_emphasis": OptionInfo(True, "Use (text) to make model pay more attention to text and [text] to make it pay less attention"),

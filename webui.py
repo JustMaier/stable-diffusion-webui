@@ -81,6 +81,20 @@ def webui():
 
     signal.signal(signal.SIGINT, sigint_handler)
 
+    if cmd_opts.websocket:
+        from modules.websocket_server import WebsocketServer
+        websocket_server = WebsocketServer({
+            "txt2img": modules.txt2img.txt2img,
+            "img2img": modules.img2img.img2img,
+            "run_extras": modules.extras.run_extras,
+            "run_pnginfo": modules.extras.run_pnginfo
+        })
+
+        websocket_port = cmd_opts.port if cmd_opts.port else 9001
+        websocket_host = "" if cmd_opts.listen else "localhost"
+        websocket_server.start(websocket_port, websocket_host)
+        return
+
     demo = modules.ui.create_ui(
         txt2img=wrap_gradio_gpu_call(modules.txt2img.txt2img),
         img2img=wrap_gradio_gpu_call(modules.img2img.img2img),

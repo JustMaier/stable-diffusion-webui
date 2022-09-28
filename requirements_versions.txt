@@ -16,3 +16,4 @@ timm==0.6.7
 fairscale==0.4.9
 piexif==1.1.3
 moviepy==1.0.3
+websockets==10.3

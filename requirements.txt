@@ -18,3 +18,4 @@ git+https://github.com/TencentARC/GFPGAN.git@8d2447a2d918f8eba5a4a01463fd48e4512
 timm==0.4.12
 transformers
 torch
+websockets==10.3
